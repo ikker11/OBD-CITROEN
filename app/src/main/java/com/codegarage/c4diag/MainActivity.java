@@ -123,10 +123,10 @@ public class MainActivity extends Activity {
         root.addView(ecuBox);
 
         LinearLayout logHead = hrow();
-        logHead.addView(button("Ver registro técnico", BTN, v -> {
+        logHead.addView(button("Ver registro", BTN, v -> {
             boolean show = logView.getVisibility() != View.VISIBLE;
             logView.setVisibility(show ? View.VISIBLE : View.GONE);
-            ((Button) v).setText(show ? "Ocultar registro" : "Ver registro técnico");
+            ((Button) v).setText(show ? "Ocultar registro" : "Ver registro");
         }, false), weight());
         logHead.addView(button("Copiar", BTN, v -> copyLog(), false), weight());
         logHead.setPadding(0, dp(16), 0, 0);
@@ -165,11 +165,14 @@ public class MainActivity extends Activity {
         btn.setText(label);
         btn.setAllCaps(false);
         btn.setTextColor(TXT);
-        btn.setTextSize(15);
+        btn.setTextSize(14);
+        btn.setMinHeight(dp(48));
+        btn.setMinimumHeight(dp(48));
+        btn.setPadding(dp(8), dp(6), dp(8), dp(6));
         btn.setBackground(round(color));
         btn.setOnClickListener(l);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(48));
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.setMargins(dp(4), dp(6), dp(4), dp(6));
         btn.setLayoutParams(lp);
         if (needsConnection) actions.add(btn);
@@ -180,11 +183,12 @@ public class MainActivity extends Activity {
         LinearLayout r = new LinearLayout(this);
         r.setOrientation(LinearLayout.HORIZONTAL);
         r.setGravity(Gravity.CENTER_VERTICAL);
+        r.setBaselineAligned(false);
         return r;
     }
 
     private LinearLayout.LayoutParams weight() {
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(48), 1f);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         lp.setMargins(dp(4), dp(6), dp(4), dp(6));
         return lp;
     }
