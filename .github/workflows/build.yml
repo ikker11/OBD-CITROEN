@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +21,18 @@ jobs:
           gradle-version: "8.9"
       - name: Compilar
         run: gradle assembleDebug --no-daemon
+      - name: Preparar APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk C4Diag.apk
       - uses: actions/upload-artifact@v4
         with:
           name: C4Diag-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: C4Diag.apk
+      - name: Publicar en Releases
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: c4diag-v${{ github.run_number }}
+          name: C4 Diag (versión ${{ github.run_number }})
+          body: App de diagnóstico C4 Picasso (ELM327 Bluetooth). Descarga C4Diag.apk.
+          files: C4Diag.apk
+          make_latest: true
