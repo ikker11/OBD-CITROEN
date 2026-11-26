@@ -158,7 +158,14 @@ public class PsaDiag {
         boolean any = false;
         if (ok(r, 0x43)) { any = true; list.addAll(parseObd(r, 0x08)); }
         r = elm.request("07", 4000);
-        if (ok(r, 0x47)) { any = true; list.addAll(parseObd(r, 0x04)); }
+        if (ok(r, 0x47)) {
+            any = true;
+            for (Dtc p : parseObd(r, 0x04)) {
+                Dtc same = null;
+                for (Dtc d : list) if (d.code.equals(p.code)) same = d;
+                if (same != null) same.status |= 0x04; else list.add(p);
+            }
+        }
         e.read = true;
         if (!any) { e.status = "No contestó"; return; }
         e.dtcs.addAll(list);

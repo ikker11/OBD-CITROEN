@@ -9,7 +9,9 @@ import android.bluetooth.BluetoothDevice;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -234,8 +236,14 @@ public class MainActivity extends Activity {
 
             for (Dtc d : e.dtcs) {
                 TextView dt = text("• " + d.describe(), 14, d.isActive() ? RED : TXT, false);
-                dt.setTextIsSelectable(true);
-                dt.setPadding(0, dp(2), 0, dp(2));
+                dt.setPadding(0, dp(4), 0, dp(4));
+                final String q = d.code + " Citroën C4 Picasso 1.6 HDi";
+                dt.setOnClickListener(v -> {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://www.google.com/search?q=" + Uri.encode(q))));
+                    } catch (Exception ex) { toast("No hay navegador"); }
+                });
                 card.addView(dt);
             }
 
@@ -339,6 +347,14 @@ public class MainActivity extends Activity {
                 ecus.addAll(found);
             });
             log("Centralitas encontradas: " + found.size());
+            boolean onlyObd = true;
+            for (Ecu e : found) if (!e.isGeneric()) onlyObd = false;
+            if (onlyObd) ui.post(() -> new AlertDialog.Builder(this)
+                    .setTitle("Solo contesta el motor (OBD)")
+                    .setMessage("En los Citroën de esta época el ABS, BSI, airbag y demás centralitas "
+                            + "van por los pines 3 y 8 del conector, y el ELM327 solo usa los 6 y 14.\n\n"
+                            + "Con un adaptador que pase los pines 3/8 a 6/14 la app podrá verlas.")
+                    .setPositiveButton("Entendido", null).show());
         });
     }
 

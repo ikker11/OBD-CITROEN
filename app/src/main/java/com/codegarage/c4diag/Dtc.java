@@ -4,7 +4,7 @@ import java.util.Locale;
 
 public class Dtc {
     public final String code;
-    public final int status;      // -1 when the protocol gives none
+    public int status;      // -1 when the protocol gives none
     public final int failureType; // UDS 3rd byte, -1 if none
 
     public Dtc(int hi, int lo, int failureType, int status) {
@@ -24,22 +24,16 @@ public class Dtc {
     public String describe() {
         StringBuilder sb = new StringBuilder(code);
         if (failureType >= 0) sb.append(String.format(Locale.US, "-%02X", failureType));
-        sb.append("  ").append(system());
+        sb.append("\n   ").append(DtcInfo.describe(code));
         if (status >= 0) {
-            if ((status & 0x01) != 0) sb.append(" · PRESENTE AHORA");
-            else if ((status & 0x08) != 0) sb.append(" · memorizada (no presente)");
-            else if ((status & 0x04) != 0) sb.append(" · pendiente");
-            else sb.append(String.format(Locale.US, " · estado %02X", status));
+            boolean conf = (status & 0x08) != 0, pend = (status & 0x04) != 0;
+            if ((status & 0x01) != 0) sb.append("\n   PRESENTE AHORA");
+            else if (conf && pend) sb.append("\n   Memorizada y pendiente (vuelve a detectarse)");
+            else if (conf) sb.append("\n   Memorizada (no presente ahora)");
+            else if (pend) sb.append("\n   Pendiente (detectada, aún sin confirmar)");
+            else sb.append(String.format(Locale.US, "\n   estado %02X", status));
         }
         return sb.toString();
     }
 
-    private String system() {
-        switch (code.charAt(0)) {
-            case 'P': return "(motor/transmisión)";
-            case 'C': return "(chasis: ABS/ESP/frenos)";
-            case 'B': return "(carrocería)";
-            default:  return "(red/comunicación)";
-        }
-    }
 }
