@@ -202,6 +202,7 @@ public class MainActivity extends Activity {
     }
 
     private void renderEcus() {
+        updateButtons();
         ecuBox.removeAllViews();
         if (ecus.isEmpty()) {
             TextView t = text(elm.isConnected()
