@@ -14,8 +14,18 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        fija {
+            storeFile file('c4diag.keystore')
+            storePassword 'c4diag123'
+            keyAlias 'c4diag'
+            keyPassword 'c4diag123'
+        }
+    }
+
     buildTypes {
-        release { minifyEnabled false }
+        debug { signingConfig signingConfigs.fija }
+        release { minifyEnabled false; signingConfig signingConfigs.fija }
     }
 
     compileOptions {
